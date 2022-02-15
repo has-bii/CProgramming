@@ -30,6 +30,10 @@ int main()
             {
                 printf("CONGRATULATION! YOU WIN!\n\n");
                 break;
+            } else if (sum != 11)
+            {
+                printf("YOU LOSE!\n\n");
+                break;
             }
 
         } else if (sum == 2 || sum == 3 || sum == 12)
