@@ -8,7 +8,7 @@ int main()
 
     for (int i = 0;; i++)
     {
-        printf("Press ENTER to throw dice\n");
+        printf("Press ENTER Key to throw dice\n");
         getchar();
 
         printf("\nNumber of throw = %d\n", i+1);
