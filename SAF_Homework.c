@@ -1,15 +1,15 @@
 #include <stdio.h>
-#include <string.h>
 
 int main()
 {
     int studentNumber, program;
-    char name[50], department[50], name2[50];
-
+    char name[30];
+    float midtermGrade, avarage, counter;
     FILE *fPtr, *temPtr;
 
-    printf("\nChoose a program:\n1-Create file\n2-List whole file content\n3-List single line according to name\n4-Add a record at the end\n5-Update record\n6-Exit\n");
+    printf("\n\nChoose a program:\n1-Create student records\n2-Print student whose grade greater than 50\n3-Print student whose grade less than 50\n4-Add 10 points to student whose grade less than 50\n5-Avarage of midterm exam\n6-Exit from program\n");
     printf("->");
+
     scanf("%d", &program);
 
     while (program != 6)
@@ -17,129 +17,142 @@ int main()
         switch (program)
         {
         case 1:
-            if ((fPtr = fopen("Question1.dat", "w")) == NULL)
+            if ((fPtr = fopen("midterm.dat", "w")) == NULL)
             {
                 printf("File can't be created!\n");
             } else
             {
-                printf("\nFile has successfully been created!\n");
+                printf("Enter student number, name and midterm grade:\n");
+                printf("Enter EOF to end inputing.\n");
+                printf("->");
+                scanf("%d%s%f", &studentNumber, name, &midtermGrade);
+
+                while (!feof(stdin))
+                {
+                    fprintf(fPtr, "%d %s %.2f\n", studentNumber, name, midtermGrade);
+                    printf("->");
+                    scanf("%d%s%f", &studentNumber, name, &midtermGrade);
+                }
+                
                 fclose(fPtr);
             }
             break;
-        
+
         case 2:
-            if ((fPtr = fopen("Question1.dat", "r")) == NULL)
+            if ((fPtr = fopen("midterm.dat", "r")) == NULL)
             {
                 printf("File can't be opened!\n");
             } else
             {
-                printf("\nList whole file content:\n");
-                fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
-        
+                printf("\n\nStudent whose grade grater than 50:\n");
+                fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
+                
                 while(!feof(fPtr))
                 {
-                    printf("%d %s %s\n", studentNumber, name, department);
-                    fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
+                    if (midtermGrade > 50)
+                    {
+                    printf("%d %s %.2f\n", studentNumber, name, midtermGrade);
+                    }
+                    fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
                 }
+                
                 fclose(fPtr);
             }
             break;
 
         case 3:
-            if ((fPtr = fopen("Question1.dat", "r")) == NULL)
+            if ((fPtr = fopen("midterm.dat", "r")) == NULL)
             {
                 printf("File can't be opened!\n");
             } else
             {
-                printf("\nEnter name whose record will be printed:\n");
-                printf("\n->");
-                scanf("%s", name2);
+                printf("\n\nStudent whose grade less than 50:\n");
+                fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
                 
-                fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
-        
                 while(!feof(fPtr))
                 {
-                    if (strcmp(name, name2) == 0)
+                    if (midtermGrade < 50)
                     {
-                    printf("%d %s %s\n", studentNumber, name, department);
+                    printf("%d %s %.2f\n", studentNumber, name, midtermGrade);
                     }
-                    fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
+                    fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
                 }
+                
                 fclose(fPtr);
             }
             break;
 
         case 4:
-            if ((fPtr = fopen("Question1.dat", "a")) == NULL)
+            if ((fPtr = fopen("midterm.dat", "r")) == NULL || (temPtr = fopen("temp.dat", "w")) == NULL)
             {
                 printf("File can't be opened!\n");
             } else
             {
-                printf("\nEnter student number, name and department:\n");
-                printf("->");
-                
-                scanf("%d%s%s", &studentNumber, name, department);
-                fprintf(fPtr, "%d %s %s\n", studentNumber, name, department);
-        
-                fclose(fPtr);
-            }
-            break;
+                fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
 
-        case 5:
-            if ((temPtr = fopen("temp.dat", "w")) == NULL || (fPtr = fopen("Question1.dat", "r")) == NULL )
+                while(!feof(fPtr))  
+                {
+                    if (midtermGrade < 50)
+                    {
+                    fprintf(temPtr, "%d %s %.2f\n", studentNumber, name, midtermGrade+10);
+                    } else
+                    {
+                    fprintf(temPtr, "%d %s %.2f\n", studentNumber, name, midtermGrade);
+                    }
+                    fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);        
+                }
+
+                fclose(fPtr);
+                fclose(temPtr);
+
+            if ((fPtr = fopen("midterm.dat", "w+")) == NULL || (temPtr = fopen("temp.dat", "r")) == NULL)
             {
-                printf("File can't be created or opened!");
+                printf("File can't be opened!\n");
             } else
             {
-                printf("\nEnter name whose record will be updated:\n");
-                printf("->");
-                scanf("%s", name2);
+                fscanf(temPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
 
-                fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
+                while (!feof(temPtr))
+                {
+                    fprintf(fPtr, "%d %s %.2f\n", studentNumber, name, midtermGrade);
+                    fscanf(temPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
+                }
+            }
+            printf("points have successfully added!");
+            
+            fclose(fPtr);
+            fclose(temPtr);
+            }
+            break;
+        
+        case 5: 
+
+            if ((fPtr = fopen("midterm.dat", "r")) == NULL)
+            {
+                printf("File can't be opened!\n");
+            } else
+            {
+                fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
 
                 while (!feof(fPtr))
                 {
-                    if (strcmp(name2,name) == 0)
-                    {
-                        printf("\nRecord has been successfully found!\nEnter a new record!\n->");
-                        scanf("%d%s%s", &studentNumber, name, department);
-                        fprintf(temPtr, "%d %s %s\n", studentNumber, name, department);
-                    } else
-                    {
-                        fprintf(temPtr, "%d %s %s\n", studentNumber, name, department);
-                    }
-                        fscanf(fPtr, "%d%s%s", &studentNumber, name, department);
+                    avarage += midtermGrade;
+                    counter++;
+                    fscanf(fPtr, "%d%s%f", &studentNumber, name, &midtermGrade);
                 }
 
-                fclose(fPtr);
-                fclose(temPtr);
-
-                if ((temPtr = fopen("temp.dat", "r")) == NULL || (fPtr = fopen("Question1.dat", "w+")) == NULL )
-                {
-                    printf("File can't be created or opened!");
-                } else
-                {
-                    fscanf(temPtr, "%d%s%s", &studentNumber, name, department);
-
-                    while (!feof(temPtr))
-                    {
-                        fprintf(fPtr, "%d %s %s\n", studentNumber, name, department);
-                        fscanf(temPtr, "%d%s%s", &studentNumber, name, department);
-                    }
-
-                    printf("Record has been successfully updated!");
-                }
-                
-                fclose(fPtr);
-                fclose(temPtr);
+                printf("\nAvarage of midterm : %f", avarage/counter);
             }
+            
+            fclose(fPtr);
+
             break;
         }
 
-        printf("\nChoose a program:\n1-Create file\n2-List whole file content\n3-List single line according to name\n4-Add a record at the end\n5-Update record\n6-Exit\n");
+        printf("\n\nChoose a program:\n1-Create student records\n2-Print student whose grade greater than 50\n3-Print student whose grade less than 50\n4-Add 10 points to student whose grade less than 50\n5-Avarage of midterm exam\n6-Exit from program\n");
         printf("->");
-        scanf("%d", &program); 
+        scanf("%d", &program);
     }
-    
+
     return 0;
 }
